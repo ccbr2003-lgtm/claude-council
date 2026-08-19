@@ -1,0 +1,63 @@
+<%- include('../partials/header', { title: 'Administração', currentUser, active: 'admin' }) %>
+<h1>Administração</h1>
+
+<div class="card">
+  <h2 class="mt0">Atalhos</h2>
+  <p>
+    <a class="btn secondary small" href="/admin/moradores">Moradores</a>
+    <a class="btn secondary small" href="/admin/trimestres">Trimestres &amp; sorteio</a>
+    <a class="btn secondary small" href="/admin/reservas">Todas as reservas</a>
+    <a class="btn secondary small" href="/admin/config">Configurações</a>
+  </p>
+</div>
+
+<div class="card">
+  <h2 class="mt0">Quadras</h2>
+  <ul>
+    <% courts.forEach(c => { %><li><%= c.name %></li><% }) %>
+  </ul>
+  <form method="post" action="/admin/quadras" class="field-row">
+    <div class="field">
+      <label>Nova quadra</label>
+      <input type="text" name="name" placeholder="ex: Quadra de Tênis" required>
+    </div>
+    <button class="btn secondary" type="submit">Adicionar</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 class="mt0">Trimestres</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Trimestre</th><th>Período</th><th>Fase</th></tr></thead>
+    <tbody>
+      <% quarters.slice(0,5).forEach(q => { %>
+        <tr><td><%= q.label %></td><td><%= q.start_date %> a <%= q.end_date %></td><td><span class="badge"><%= q.phase_label %></span></td></tr>
+      <% }) %>
+      <% if (!quarters.length) { %><tr><td colspan="3" class="muted">Nenhum trimestre cadastrado. <a href="/admin/trimestres">Criar o primeiro</a>.</td></tr><% } %>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="mt0">Próximas reservas (todas)</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Data</th><th>Hora</th><th>Quadra</th><th>Morador</th><th>Apto</th><th>Tipo</th></tr></thead>
+    <tbody>
+      <% upcomingBookings.forEach(b => { %>
+        <tr>
+          <td><%= b.date %></td><td><%= b.start_hour %>h</td><td><%= b.court_name %></td>
+          <td><%= b.user_name %></td><td><%= b.apartment %></td>
+          <td><span class="badge <%= b.type === 'fixa' ? '' : 'muted' %>"><%= b.type === 'fixa' ? 'Fixo' : 'Avulso' %></span></td>
+        </tr>
+      <% }) %>
+      <% if (!upcomingBookings.length) { %><tr><td colspan="6" class="muted">Nenhuma reserva futura.</td></tr><% } %>
+    </tbody>
+  </table>
+  </div>
+  <p><a href="/admin/reservas">Ver todas / cancelar</a></p>
+</div>
+
+<%- include('../partials/footer') %>

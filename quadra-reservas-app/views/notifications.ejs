@@ -1,0 +1,17 @@
+<%- include('partials/header', { title: 'Notificações', currentUser, active: '' }) %>
+<h1>Notificações</h1>
+<div class="card">
+  <% if (!notifications.length) { %>
+    <p class="muted">Nenhuma notificação ainda.</p>
+  <% } else { %>
+    <ul>
+      <% notifications.forEach(n => { %>
+        <li style="margin-bottom:0.6rem">
+          <span class="small muted"><%= n.created_at %></span><br>
+          <%= n.message %>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

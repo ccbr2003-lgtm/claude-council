@@ -1,0 +1,29 @@
+<%- include('../partials/header', { title: 'Configurações', currentUser, active: 'admin' }) %>
+<p><a href="/admin">&larr; administração</a></p>
+<h1>Configurações</h1>
+<% if (error) { %><div class="alert error"><%= error %></div><% } %>
+<% if (ok) { %><div class="alert ok"><%= ok %></div><% } %>
+
+<div class="card">
+  <form method="post" action="/admin/config">
+    <div class="field-row">
+      <div class="field"><label>Abertura da quadra (hora)</label><input type="number" min="0" max="23" name="open_hour" value="<%= settings.open_hour %>"></div>
+      <div class="field"><label>Fechamento da quadra (hora)</label><input type="number" min="1" max="24" name="close_hour" value="<%= settings.close_hour %>"></div>
+    </div>
+    <p class="small muted">Último bloco reservável começa às <%= settings.close_hour - 1 %>h. Blocos são sempre de 1 hora cheia.</p>
+
+    <div class="field-row">
+      <div class="field"><label>Limite de reservas por semana / morador</label><input type="number" min="1" name="weekly_limit" value="<%= settings.weekly_limit %>"></div>
+      <div class="field"><label>Antecedência máx. para reserva avulsa (dias)</label><input type="number" min="1" name="booking_horizon_days" value="<%= settings.booking_horizon_days %>"></div>
+    </div>
+
+    <div class="field-row">
+      <div class="field"><label>Duração do trimestre (meses)</label><input type="number" min="1" name="quarter_length_months" value="<%= settings.quarter_length_months %>"></div>
+      <div class="field"><label>Interesse abre (dias antes do início)</label><input type="number" min="1" name="interest_open_days_before_start" value="<%= settings.interest_open_days_before_start %>"></div>
+      <div class="field"><label>Interesse fecha (dias antes do início)</label><input type="number" min="0" name="interest_close_days_before_start" value="<%= settings.interest_close_days_before_start %>"></div>
+    </div>
+
+    <button class="btn" type="submit">Salvar</button>
+  </form>
+</div>
+<%- include('../partials/footer') %>

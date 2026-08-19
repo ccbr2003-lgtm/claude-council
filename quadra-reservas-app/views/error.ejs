@@ -1,0 +1,7 @@
+<%- include('partials/header', { title: title, currentUser: typeof currentUser !== 'undefined' ? currentUser : null }) %>
+<div class="card">
+  <h1 class="mt0"><%= title %></h1>
+  <p><%= message %></p>
+  <a class="btn secondary" href="/">Voltar ao início</a>
+</div>
+<%- include('partials/footer') %>

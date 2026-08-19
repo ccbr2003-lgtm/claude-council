@@ -1,0 +1,53 @@
+<%- include('../partials/header', { title: 'Trimestres', currentUser, active: 'admin' }) %>
+<p><a href="/admin">&larr; administração</a></p>
+<h1>Trimestres &amp; sorteio</h1>
+<% if (error) { %><div class="alert error"><%= error %></div><% } %>
+<% if (ok) { %><div class="alert ok"><%= ok %></div><% } %>
+
+<div class="card">
+  <h2 class="mt0">Criar próximo trimestre</h2>
+  <p class="small muted">Datas sugeridas com base nas configurações e no último trimestre cadastrado. Ajuste se necessário.</p>
+  <form method="post" action="/admin/trimestres">
+    <div class="field-row">
+      <div class="field"><label>Nome</label><input type="text" name="label" placeholder="ex: 2026 T4 (Out-Dez)" required></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Início do trimestre</label><input type="date" name="start_date" value="<%= suggestion.start_date %>" required></div>
+      <div class="field"><label>Fim do trimestre</label><input type="date" name="end_date" value="<%= suggestion.end_date %>" required></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Abertura do interesse</label><input type="date" name="interest_open_at" value="<%= suggestion.interest_open_at %>" required></div>
+      <div class="field"><label>Fechamento do interesse</label><input type="date" name="interest_close_at" value="<%= suggestion.interest_close_at %>" required></div>
+    </div>
+    <button class="btn" type="submit">Criar trimestre</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 class="mt0">Todos os trimestres</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Trimestre</th><th>Período</th><th>Janela de interesse</th><th>Fase</th><th></th></tr></thead>
+    <tbody>
+      <% quarters.forEach(q => { %>
+        <tr>
+          <td><%= q.label %></td>
+          <td><%= q.start_date %> a <%= q.end_date %></td>
+          <td><%= q.interest_open_at %> a <%= q.interest_close_at %></td>
+          <td><span class="badge"><%= q.phase_label %></span></td>
+          <td>
+            <a class="btn secondary small" href="/sorteios/<%= q.id %>">Ver</a>
+            <% if (q.phase === 'aguardando_sorteio') { %>
+              <form class="inline" method="post" action="/admin/trimestres/<%= q.id %>/sorteio" onsubmit="return confirm('Rodar o sorteio para <%= q.label %>? Essa ação não pode ser desfeita.')">
+                <button class="btn small" type="submit">Rodar sorteio</button>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!quarters.length) { %><tr><td colspan="5" class="muted">Nenhum trimestre cadastrado.</td></tr><% } %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>
