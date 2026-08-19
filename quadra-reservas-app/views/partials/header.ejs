@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' ? title + ' · Quadra Reservas' : 'Quadra Reservas' %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<% if (typeof currentUser !== 'undefined' && currentUser) { %>
+<div class="topbar">
+  <a class="brand" href="/">🏸 Quadra do Condomínio</a>
+  <nav>
+    <a href="/" class="<%= typeof active !== 'undefined' && active === 'inicio' ? 'active' : '' %>">Início</a>
+    <a href="/minhas-reservas" class="<%= typeof active !== 'undefined' && active === 'minhas' ? 'active' : '' %>">Minhas reservas</a>
+    <a href="/interesse" class="<%= typeof active !== 'undefined' && active === 'interesse' ? 'active' : '' %>">Horário fixo</a>
+    <a href="/sorteios" class="<%= typeof active !== 'undefined' && active === 'sorteios' ? 'active' : '' %>">Sorteios</a>
+    <% if (currentUser.role === 'sindico') { %>
+      <a href="/admin" class="<%= typeof active !== 'undefined' && active === 'admin' ? 'active' : '' %>">Administração</a>
+    <% } %>
+  </nav>
+  <div class="spacer"></div>
+  <div class="user-area">
+    <a href="/notificacoes">🔔</a>
+    <a href="/perfil"><%= currentUser.name %> · apto <%= currentUser.apartment %></a>
+    <form class="inline" method="post" action="/logout"><button class="btn-link" type="submit">Sair</button></form>
+  </div>
+</div>
+<% } %>
+<main class="container">

@@ -1,0 +1,71 @@
+<%- include('partials/header', { title: quarter.label, currentUser, active: 'sorteios' }) %>
+<p><a href="/sorteios">&larr; todos os trimestres</a></p>
+<h1><%= quarter.label %></h1>
+<p class="muted small">
+  <%= quarter.start_date %> a <%= quarter.end_date %> ·
+  Janela de interesse: <%= quarter.interest_open_at %> a <%= quarter.interest_close_at %> ·
+  <span class="badge <%= quarter.draw_done ? '' : 'muted' %>"><%= quarter.phase_label %></span>
+</p>
+
+<% if (!quarter.draw_done) { %>
+  <div class="card"><p>O sorteio deste trimestre ainda não foi realizado.</p></div>
+<% } else { %>
+
+<div class="card">
+  <h2 class="mt0">Horários fixos concedidos</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Dia</th><th>Hora</th><th>Morador</th><th>Apto</th><th>Método</th></tr></thead>
+    <tbody>
+      <% allocations.forEach(a => { %>
+        <tr class="<%= a.user_id === currentUserId ? 'mine' : '' %>">
+          <td><%= a.weekday_name %></td>
+          <td><%= a.start_hour %>h</td>
+          <td><%= a.user_name %><%= a.user_id === currentUserId ? ' (você)' : '' %></td>
+          <td><%= a.apartment %></td>
+          <td><span class="badge <%= a.method === 'sorteio' ? '' : 'muted' %>"><%= a.method === 'sorteio' ? 'Sorteio' : 'Único interessado' %></span></td>
+        </tr>
+      <% }) %>
+      <% if (!allocations.length) { %><tr><td colspan="5" class="muted">Nenhum horário teve interessados neste trimestre.</td></tr><% } %>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="mt0">Auditoria do sorteio</h2>
+  <p class="small muted">
+    Registro completo de cada disputa: quem manifestou interesse, se o titular anterior foi excluído por
+    haver outro interessado (regra de rodízio) e o resultado do sorteio.
+  </p>
+  <% log.forEach(l => { %>
+    <div style="border-top:1px solid var(--border); padding-top:0.75rem; margin-top:0.75rem">
+      <strong><%= l.weekday_name %> às <%= l.start_hour %>h</strong>
+      — <span class="badge <%= l.candidates.length > 1 ? '' : 'muted' %>">
+          <%= l.candidates.length %> interessado<%= l.candidates.length === 1 ? '' : 's' %>
+        </span>
+      <ul class="small">
+        <% l.candidates.forEach(c => { %>
+          <li>
+            <%= c.name %> (apto <%= c.apartment %>)
+            <% if (c.id === l.incumbent_user_id) { %>
+              <span class="badge <%= l.incumbent_excluded ? 'warn' : 'muted' %>">
+                titular anterior<%= l.incumbent_excluded ? ' — excluído desta disputa (rodízio)' : '' %>
+              </span>
+            <% } %>
+            <% if (c.id === l.winner_user_id) { %><span class="badge">venceu</span><% } %>
+          </li>
+        <% }) %>
+      </ul>
+      <% if (l.random_roll !== null) { %>
+        <p class="small muted">
+          Sorteio entre <%= l.eligible.length %> elegívei<%= l.eligible.length === 1 ? 'l' : 's' %>
+          (número sorteado: <%= l.random_roll %> de 0 a <%= l.eligible.length - 1 %>).
+        </p>
+      <% } %>
+    </div>
+  <% }) %>
+  <% if (!log.length) { %><p class="muted">Nenhum horário teve mais de um interessado neste trimestre.</p><% } %>
+</div>
+<% } %>
+<%- include('partials/footer') %>

@@ -1,0 +1,21 @@
+<%- include('partials/header', { title: 'Sorteios', currentUser, active: 'sorteios' }) %>
+<h1>Trimestres e sorteios</h1>
+<div class="card">
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Trimestre</th><th>Período</th><th>Fase</th><th></th></tr></thead>
+    <tbody>
+      <% quarters.forEach(q => { %>
+        <tr>
+          <td><%= q.label %></td>
+          <td><%= q.start_date %> a <%= q.end_date %></td>
+          <td><span class="badge <%= q.draw_done ? '' : 'muted' %>"><%= q.phase_label %></span></td>
+          <td><a class="btn secondary small" href="/sorteios/<%= q.id %>">Ver detalhes</a></td>
+        </tr>
+      <% }) %>
+      <% if (!quarters.length) { %><tr><td colspan="4" class="muted">Nenhum trimestre cadastrado ainda.</td></tr><% } %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<%- include('partials/footer') %>

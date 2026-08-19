@@ -1,0 +1,29 @@
+<%- include('../partials/header', { title: 'Reservas', currentUser, active: 'admin' }) %>
+<p><a href="/admin">&larr; administração</a></p>
+<h1>Todas as reservas</h1>
+<% if (error) { %><div class="alert error"><%= error %></div><% } %>
+<% if (ok) { %><div class="alert ok"><%= ok %></div><% } %>
+
+<div class="card">
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Data</th><th>Hora</th><th>Quadra</th><th>Morador</th><th>Apto</th><th>Tipo</th><th></th></tr></thead>
+    <tbody>
+      <% bookings.forEach(b => { %>
+        <tr>
+          <td><%= b.date %></td><td><%= b.start_hour %>h</td><td><%= b.court_name %></td>
+          <td><%= b.user_name %></td><td><%= b.apartment %></td>
+          <td><span class="badge <%= b.type === 'fixa' ? '' : 'muted' %>"><%= b.type === 'fixa' ? 'Fixo' : 'Avulso' %></span></td>
+          <td>
+            <form method="post" action="/admin/reservas/<%= b.id %>/cancelar" onsubmit="return confirm('Cancelar a reserva de <%= b.user_name %> em <%= b.date %> às <%= b.start_hour %>h?')">
+              <button class="btn danger small" type="submit">Cancelar</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!bookings.length) { %><tr><td colspan="7" class="muted">Nenhuma reserva futura.</td></tr><% } %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>

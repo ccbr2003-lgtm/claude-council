@@ -1,0 +1,85 @@
+<%- include('partials/header', { title: 'Início', currentUser, active: 'inicio' }) %>
+
+<h1>Reservar horário avulso</h1>
+
+<% if (error) { %><div class="alert error"><%= error %></div><% } %>
+<% if (ok) { %><div class="alert ok"><%= ok %></div><% } %>
+
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.75rem">
+    <div>
+      <% if (courts.length > 1) { %>
+        <form method="get" action="/" class="inline">
+          <input type="hidden" name="data" value="<%= startDate %>">
+          <select name="quadra" onchange="this.form.submit()">
+            <% courts.forEach(c => { %>
+              <option value="<%= c.id %>" <%= c.id === court.id ? 'selected' : '' %>><%= c.name %></option>
+            <% }) %>
+          </select>
+        </form>
+      <% } else { %>
+        <strong><%= court.name %></strong>
+      <% } %>
+    </div>
+    <div class="small muted">
+      Uso desta semana: <strong><%= weeklyUsed %>/<%= weeklyLimit %></strong> reservas ·
+      reservas avulsas vão até <%= horizonEnd %>
+    </div>
+  </div>
+
+  <div style="display:flex; justify-content:space-between; margin-bottom:0.6rem">
+    <a class="btn secondary small" href="/?quadra=<%= court.id %>&data=<%= prevStart %>">&larr; Semana anterior</a>
+    <a class="btn secondary small" href="/?quadra=<%= court.id %>&data=<%= today %>">Hoje</a>
+    <a class="btn secondary small" href="/?quadra=<%= court.id %>&data=<%= nextStart %>">Próxima semana &rarr;</a>
+  </div>
+
+  <div class="calendar-grid">
+    <div></div>
+    <% days.forEach(d => { %>
+      <div class="col-head"><%= d.weekday_name.slice(0,3) %><br><span class="muted"><%= d.date.slice(5) %></span></div>
+    <% }) %>
+
+    <% const hours = days[0].slots.map(s => s.hour); %>
+    <% hours.forEach(hour => { %>
+      <div class="hour-label"><%= hour %>h</div>
+      <% days.forEach(d => { %>
+        <% const slot = d.slots.find(s => s.hour === hour); %>
+        <% const isPast = d.date < today; %>
+        <% if (isPast) { %>
+          <div class="slot past">–</div>
+        <% } else if (slot.booking) { %>
+          <% const mine = slot.booking.user_id === currentUser.id; %>
+          <div class="slot taken <%= mine ? 'mine' : '' %>" title="<%= mine ? 'Sua reserva' : (currentUser.role === 'sindico' ? slot.booking.user_name + ' (apto ' + slot.booking.apartment + ')' : 'Ocupado') %>">
+            <%= mine ? 'Você' : (slot.booking.type === 'fixa' ? 'Fixo' : 'Ocupado') %>
+          </div>
+        <% } else if (d.date > horizonEnd) { %>
+          <div class="slot past" title="Fora do período de reserva avulsa">–</div>
+        <% } else { %>
+          <div class="slot free">
+            <form method="post" action="/reservas">
+              <input type="hidden" name="court_id" value="<%= court.id %>">
+              <input type="hidden" name="date" value="<%= d.date %>">
+              <input type="hidden" name="hour" value="<%= hour %>">
+              <button type="submit" title="Reservar <%= d.date %> às <%= hour %>h">Livre</button>
+            </form>
+          </div>
+        <% } %>
+      <% }) %>
+    <% }) %>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="mt0">Regras da quadra</h2>
+  <ul class="small muted">
+    <li>Reservas somente em blocos de 1 hora cheia (sem horários quebrados).</li>
+    <li>Máximo de <%= weeklyLimit %> reservas por semana por morador (somando fixas e avulsas).</li>
+    <li>Reservas avulsas podem ser feitas com antecedência limitada (até <%= horizonEnd %>, veja acima).</li>
+    <li>Horários fixos trimestrais são definidos por <a href="/interesse">sorteio justo</a> quando há mais de um interessado.</li>
+  </ul>
+  <% if (currentQuarter) { %>
+    <p class="small">Trimestre atual: <strong><%= currentQuarter.label %></strong> (<%= currentQuarter.start_date %> a <%= currentQuarter.end_date %>)</p>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,47 @@
+<%- include('partials/header', { title: 'Minhas reservas', currentUser, active: 'minhas' }) %>
+<h1>Minhas reservas</h1>
+<% if (error) { %><div class="alert error"><%= error %></div><% } %>
+<% if (ok) { %><div class="alert ok"><%= ok %></div><% } %>
+
+<% if (fixedAllocations.length) { %>
+<div class="card">
+  <h2 class="mt0">Meus horários fixos (trimestre atual)</h2>
+  <table>
+    <thead><tr><th>Quadra</th><th>Dia</th><th>Hora</th></tr></thead>
+    <tbody>
+      <% fixedAllocations.forEach(fa => { %>
+        <tr><td><%= fa.court_name %></td><td><%= fa.weekday_name %></td><td><%= fa.start_hour %>h</td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+<div class="card">
+  <h2 class="mt0">Próximas reservas</h2>
+  <% if (!bookings.length) { %>
+    <p class="muted">Você não tem reservas futuras. <a href="/">Reservar um horário</a>.</p>
+  <% } else { %>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Data</th><th>Hora</th><th>Quadra</th><th>Tipo</th><th></th></tr></thead>
+    <tbody>
+      <% bookings.forEach(b => { %>
+        <tr>
+          <td><%= b.date %></td>
+          <td><%= b.start_hour %>h</td>
+          <td><%= b.court_name %></td>
+          <td><span class="badge <%= b.type === 'fixa' ? '' : 'muted' %>"><%= b.type === 'fixa' ? 'Fixo' : 'Avulso' %></span></td>
+          <td>
+            <form method="post" action="/reservas/<%= b.id %>/cancelar" onsubmit="return confirm('Cancelar esta reserva de <%= b.date %> às <%= b.start_hour %>h?')">
+              <button class="btn danger small" type="submit">Cancelar</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  </div>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

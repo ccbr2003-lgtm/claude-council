@@ -1,0 +1,22 @@
+{
+  "name": "quadra-reservas-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema de reservas da quadra do condominio - horarios avulsos e fixos com sorteio justo por trimestre",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node src/seed.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
+  }
+}
